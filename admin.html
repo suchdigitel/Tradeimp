@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - TradeMasters</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Admin Login (if not authenticated) -->
+    <div id="admin-login" class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full mx-4">
+            <div class="text-center mb-8">
+                <div class="flex items-center justify-center space-x-2 text-blue-600 mb-4">
+                    <i class="fas fa-chart-line text-2xl"></i>
+                    <span class="text-xl font-bold">TradeMasters</span>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900">Admin Panel</h1>
+                <p class="text-gray-600 mt-2">Enter admin password to continue</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-8">
+                <form id="login-form">
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Admin Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                            placeholder="Enter admin password"
+                            required
+                        >
+                    </div>
+
+                    <div id="login-error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg hidden">
+                        <p class="text-red-800 text-sm"></p>
+                    </div>
+
+                    <button 
+                        type="submit"
+                        class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                        Access Admin Panel
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (if authenticated) -->
+    <div id="admin-panel" class="hidden">
+        <!-- Navigation -->
+        <nav class="bg-gray-800 text-white shadow-md">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-chart-line text-blue-400 text-2xl"></i>
+                        <span class="text-xl font-bold">TradeMasters Admin</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-6">
+                        <span class="text-gray-300">Administrator</span>
+                        <button id="admin-logout" class="text-gray-300 hover:text-white">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto px-4 py-8">
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-users text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total Users</p>
+                            <p class="text-2xl font-bold" id="total-users">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-trophy text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Competitors</p>
+                            <p class="text-2xl font-bold" id="total-competitors">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-rupee-sign text-yellow-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Prize Pool</p>
+                            <p class="text-2xl font-bold" id="current-prize-pool">₹0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-clock text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Status</p>
+                            <p class="text-2xl font-bold" id="competition-status">Inactive</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Competition Management -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">Competition Management</h2>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div id="competition-controls">
+                            <!-- Competition controls will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h3 class="text-lg font-bold mb-3">Manual Competitor Management</h3>
+                        <div class="flex space-x-3 mb-3">
+                            <input 
+                                type="text" 
+                                id="competitor-username"
+                                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter username"
+                            >
+                            <button 
+                                id="add-competitor-btn"
+                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                            >
+                                Add
+                            </button>
+                        </div>
+                        <button 
+                            id="remove-competitor-btn"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                        >
+                            Remove Selected
+                        </button>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-3">Verification Codes</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600 mb-3">Generate verification codes for manual payments:</p>
+                            <div class="flex space-x-3">
+                                <input 
+                                    type="text" 
+                                    id="user-id-for-code"
+                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                    placeholder="User ID or Username"
+                                >
+                                <button 
+                                    id="generate-code-btn"
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                                >
+                                    Generate Code
+                                </button>
+                            </div>
+                            <div id="generated-code" class="mt-3 p-3 bg-blue-100 rounded-lg hidden">
+                                <p class="text-blue-800 font-mono text-center"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Management -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">Data Management</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-bold mb-3">Export Data</h3>
+                            <p class="text-gray-600 mb-3">Download all competition data as JSON file for backup.</p>
+                            <button 
+                                id="export-data-btn"
+                                class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition"
+                            >
+                                <i class="fas fa-download mr-2"></i>Export All Data
+                            </button>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-bold mb-3">Import Data</h3>
+                            <p class="text-gray-600 mb-3">Restore data from previously exported JSON file.</p>
+                            <div class="flex space-x-3">
+                                <input 
+                                    type="file" 
+                                    id="import-file"
+                                    class="flex-1"
+                                    accept=".json"
+                                >
+                                <button 
+                                    id="import-data-btn"
+                                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                                >
+                                    Import
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-bold mb-3">Danger Zone</h3>
+                            <p class="text-gray-600 mb-3">Reset all competition data. This cannot be undone.</p>
+                            <button 
+                                id="reset-data-btn"
+                                class="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition"
+                            >
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Reset All Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitors List -->
+            <div class="bg-white rounded-xl shadow-md p-6 mt-8">
+                <h2 class="text-2xl font-bold mb-4">Current Competitors</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b-2">
+                                <th class="text-left py-3">
+                                    <input type="checkbox" id="select-all-competitors">
+                                </th>
+                                <th class="text-left py-3 font-bold">Username</th>
+                                <th class="text-left py-3 font-bold">Joined At</th>
+                                <th class="text-left py-3 font-bold">Portfolio Value</th>
+                                <th class="text-left py-3 font-bold">Return</th>
+                            </tr>
+                        </thead>
+                        <tbody id="competitors-list">
+                            <!-- Competitors will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ADMIN: Password for admin access
+        const ADMIN_PASSWORD = "ADMIN123";
+        const ENTRY_FEE = 70;
+
+        // Check if user is admin
+        function isAdmin() {
+            return localStorage.getItem('trademasters_admin') === 'true';
+        }
+
+        // Login as admin
+        function adminLogin(password) {
+            if (password === ADMIN_PASSWORD) {
+                localStorage.setItem('trademasters_admin', 'true');
+                return true;
+            }
+            return false;
+        }
+
+        // Logout as admin
+        function adminLogout() {
+            localStorage.removeItem('trademasters_admin');
+        }
+
+        // Get all users (admin function)
+        function getAllUsers() {
+            return JSON.parse(localStorage.getItem('trademasters_users') || '[]');
+        }
+
+        // Competition functions
+        function isCompetitionActive() {
+            const startTime = localStorage.getItem('competition_start_time');
+            if (!startTime) return false;
+            
+            const now = new Date().getTime();
+            const endTime = parseInt(startTime) + (14 * 24 * 60 * 60 * 1000);
+            return now < endTime;
+        }
+
+        function getCompetitionTimeRemaining() {
+            const startTime = localStorage.getItem('competition_start_time');
+            if (!startTime) return null;
+            
+            const now = new Date().getTime();
+            const endTime = parseInt(startTime) + (14 * 24 * 60 * 60 * 1000);
+            
+            if (now >= endTime) return 0;
+            return endTime - now;
+        }
+
+        function calculateCompetitorPortfolioValues() {
+            const competitors = JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+            const products = JSON.parse(localStorage.getItem('trademasters_products') || '{}');
+            
+            const leaderboard = competitors.map(competitor => {
+                let portfolioValue = competitor.competitionPortfolio.balance;
+                
+                for (const productName in competitor.competitionPortfolio.holdings) {
+                    const quantity = competitor.competitionPortfolio.holdings[productName];
+                    if (quantity > 0 && products[productName]) {
+                        portfolioValue += quantity * products[productName].currentPrice;
+                    }
+                }
+                
+                return {
+                    username: competitor.username,
+                    portfolioValue: portfolioValue,
+                    balance: competitor.competitionPortfolio.balance,
+                    holdings: { ...competitor.competitionPortfolio.holdings }
+                };
+            });
+            
+            // Sort by portfolio value (descending)
+            leaderboard.sort((a, b) => b.portfolioValue - a.portfolioValue);
+            
+            return leaderboard;
+        }
+
+        function calculatePrizes() {
+            const competitors = JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+            const leaderboard = calculateCompetitorPortfolioValues();
+            
+            const prizePool = (competitors.length * ENTRY_FEE) * 0.7; // 70% of entry fees as prize pool
+            
+            const prizes = {
+                1: prizePool * 0.5,  // 50%
+                2: prizePool * 0.3,  // 30%
+                3: prizePool * 0.2   // 20%
+            };
+            
+            return {
+                leaderboard: leaderboard,
+                prizes: prizes,
+                prizePool: prizePool
+            };
+        }
+
+        // Start competition (admin function)
+        function startCompetition() {
+            const startTime = new Date().getTime();
+            localStorage.setItem('competition_start_time', startTime.toString());
+            
+            // Initialize competitor portfolios if not already set
+            const competitors = JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+            
+            for (const competitor of competitors) {
+                if (!competitor.competitionPortfolio) {
+                    competitor.competitionPortfolio = {
+                        balance: 10000,
+                        holdings: {
+                            TechCoin: 0,
+                            GreenEnergy: 0,
+                            ForexPair: 0
+                        },
+                        transactionHistory: []
+                    };
+                    competitor.joinedAt = new Date().toISOString();
+                }
+            }
+            
+            localStorage.setItem('trademasters_competitors', JSON.stringify(competitors));
+            
+            return startTime;
+        }
+
+        // Reset competition (admin function)
+        function resetCompetition() {
+            localStorage.removeItem('competition_start_time');
+            localStorage.removeItem('trademasters_competitors');
+            localStorage.removeItem('trademasters_verification_codes');
+        }
+
+        // Add manual competitor (admin function)
+        function addManualCompetitor(username) {
+            const users = getAllUsers();
+            const user = users.find(u => u.username === username);
+            
+            if (!user) {
+                return { success: false, message: 'User not found' };
+            }
+            
+            const competitors = JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+            
+            // Check if user is already a competitor
+            if (competitors.some(c => c.userId === user.id)) {
+                return { success: false, message: 'User is already a competitor' };
+            }
+            
+            const competitor = {
+                userId: user.id,
+                username: user.username,
+                joinedAt: new Date().toISOString(),
+                competitionPortfolio: {
+                    balance: 10000,
+                    holdings: {
+                        TechCoin: 0,
+                        GreenEnergy: 0,
+                        ForexPair: 0
+                    },
+                    transactionHistory: []
+                }
+            };
+            
+            competitors.push(competitor);
+            localStorage.setItem('trademasters_competitors', JSON.stringify(competitors));
+            
+            return { success: true, message: `Added ${username} to competition` };
+        }
+
+        // Remove competitor (admin function)
+        function removeCompetitor(username) {
+            const competitors = JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+            const initialLength = competitors.length;
+            
+            const updatedCompetitors = competitors.filter(c => c.username !== username);
+            
+            if (updatedCompetitors.length === initialLength) {
+                return { success: false, message: 'Competitor not found' };
+            }
+            
+            localStorage.setItem('trademasters_competitors', JSON.stringify(updatedCompetitors));
+            
+            return { success: true, message: `Removed ${username} from competition` };
+        }
+
+        function generateVerificationCode(userId) {
+            const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const verificationCodes = JSON.parse(localStorage.getItem('trademasters_verification_codes') || '{}');
+            
+            verificationCodes[code] = {
+                userId: userId,
+                createdAt: new Date().getTime(),
+                used: false
+            };
+            
+            localStorage.setItem('trademasters_verification_codes', JSON.stringify(verificationCodes));
+            
+            return code;
+        }
+
+        // Export data as JSON (admin function)
+        function exportData() {
+            const users = getAllUsers();
+            const competitors = JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+            const products = JSON.parse(localStorage.getItem('trademasters_products') || '{}');
+            const competitionState = {
+                startTime: localStorage.getItem('competition_start_time'),
+                isActive: isCompetitionActive()
+            };
+            
+            const data = {
+                users: users,
+                competitors: competitors,
+                products: products,
+                competitionState: competitionState,
+                exportTime: new Date().toISOString()
+            };
+            
+            return JSON.stringify(data, null, 2);
+        }
+
+        // Import data from JSON (admin function)
+        function importData(jsonData) {
+            try {
+                const data = JSON.parse(jsonData);
+                
+                if (data.users) {
+                    localStorage.setItem('trademasters_users', JSON.stringify(data.users));
+                }
+                
+                if (data.competitors) {
+                    localStorage.setItem('trademasters_competitors', JSON.stringify(data.competitors));
+                }
+                
+                if (data.products) {
+                    localStorage.setItem('trademasters_products', JSON.stringify(data.products));
+                }
+                
+                if (data.competitionState && data.competitionState.startTime) {
+                    localStorage.setItem('competition_start_time', data.competitionState.startTime.toString());
+                }
+                
+                return { success: true, message: 'Data imported successfully' };
+            } catch (error) {
+                return { success: false, message: 'Invalid JSON data' };
+            }
+        }
+
+        // Reset all data (admin function)
+        function resetAllData() {
+            if (confirm('Are you sure you want to reset ALL data? This cannot be undone.')) {
+                localStorage.removeItem('trademasters_users');
+                localStorage.removeItem('trademasters_competitors');
+                localStorage.removeItem('trademasters_products');
+                localStorage.removeItem('competition_start_time');
+                localStorage.removeItem('trademasters_verification_codes');
+                localStorage.removeItem('trademasters_current_user');
+                localStorage.removeItem('trademasters_admin');
+                
+                return { success: true, message: 'All data has been reset' };
+            }
+            
+            return { success: false, message: 'Reset cancelled' };
+        }
+
+        // Check admin authentication
+        function checkAdminAuth() {
+            if (isAdmin()) {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                initializeAdminPanel();
+            }
+        }
+
+        // Initialize admin panel
+        function initializeAdminPanel() {
+            updateStats();
+            updateCompetitionControls();
+            updateCompetitorsList();
+            
+            // Set up event listeners
+            setupAdminEventListeners();
+            
+            // Auto-refresh
+            setInterval(updateStats, 10000);
+            setInterval(updateCompetitorsList, 30000);
+        }
+
+        function updateStats() {
+            const users = getAllUsers();
+            const competitors = JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+            const prizes = calculatePrizes();
+            const isActive = isCompetitionActive();
+            
+            document.getElementById('total-users').textContent = users.length;
+            document.getElementById('total-competitors').textContent = competitors.length;
+            document.getElementById('current-prize-pool').textContent = `₹${prizes.prizePool.toFixed(2)}`;
+            document.getElementById('competition-status').textContent = isActive ? 'Active' : 'Inactive';
+            document.getElementById('competition-status').className = isActive ? 'text-2xl font-bold text-green-600' : 'text-2xl font-bold text-red-600';
+        }
+
+        function updateCompetitionControls() {
+            const controlsContainer = document.getElementById('competition-controls');
+            const isActive = isCompetitionActive();
+            const startTime = localStorage.getItem('competition_start_time');
+            
+            if (!startTime) {
+                controlsContainer.innerHTML = `
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <p class="text-yellow-800">Competition is not started</p>
+                    </div>
+                    <button 
+                        id="start-competition-btn"
+                        class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition"
+                    >
+                        Start Competition
+                    </button>
+                `;
+            } else if (isActive) {
+                const timeLeft = getCompetitionTimeRemaining();
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                
+                controlsContainer.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <p class="text-green-800 font-bold">Competition Active</p>
+                        <p class="text-green-700">Time remaining: ${days}d ${hours}h</p>
+                    </div>
+                    <button 
+                        id="reset-competition-btn"
+                        class="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition"
+                    >
+                        Reset Competition
+                    </button>
+                `;
+            } else {
+                controlsContainer.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                        <p class="text-red-800">Competition has ended</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button 
+                            id="restart-competition-btn"
+                            class="bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition"
+                        >
+                            Restart
+                        </button>
+                        <button 
+                            id="reset-competition-btn"
+                            class="bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition"
+                        >
+                            Reset
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function updateCompetitorsList() {
+            const container = document.getElementById('competitors-list');
+            const competitors = JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+            const leaderboard = calculateCompetitorPortfolioValues();
+            
+            if (competitors.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-gray-500">
+                            <i class="fas fa-users text-3xl mb-2 block"></i>
+                            <p>No competitors yet</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            container.innerHTML = competitors.map(competitor => {
+                const leaderboardEntry = leaderboard.find(c => c.username === competitor.username);
+                const portfolioValue = leaderboardEntry ? leaderboardEntry.portfolioValue : 10000;
+                const returnValue = ((portfolioValue - 10000) / 10000 * 100);
+                
+                return `
+                    <tr class="border-b">
+                        <td class="py-3">
+                            <input type="checkbox" class="competitor-checkbox" value="${competitor.username}">
+                        </td>
+                        <td class="py-3 font-medium">${competitor.username}</td>
+                        <td class="py-3 text-sm text-gray-600">${new Date(competitor.joinedAt).toLocaleDateString()}</td>
+                        <td class="py-3 font-bold">₹${portfolioValue.toFixed(2)}</td>
+                        <td class="py-3 ${returnValue >= 0 ? 'text-green-500' : 'text-red-500'} font-bold">
+                            ${returnValue >= 0 ? '+' : ''}${returnValue.toFixed(2)}%
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function setupAdminEventListeners() {
+            // Admin login
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const password = document.getElementById('password').value;
+                const errorDiv = document.getElementById('login-error');
+                
+                if (adminLogin(password)) {
+                    checkAdminAuth();
+                } else {
+                    errorDiv.querySelector('p').textContent = 'Invalid admin password';
+                    errorDiv.classList.remove('hidden');
+                }
+            });
+
+            // Admin logout
+            document.getElementById('admin-logout').addEventListener('click', function() {
+                adminLogout();
+                location.reload();
+            });
+
+            // Competition controls
+            document.addEventListener('click', function(e) {
+                if (e.target.id === 'start-competition-btn') {
+                    startCompetition();
+                    updateStats();
+                    updateCompetitionControls();
+                    updateCompetitorsList();
+                    alert('Competition started!');
+                } else if (e.target.id === 'reset-competition-btn') {
+                    if (confirm('Are you sure you want to reset the competition? All competitor data will be lost.')) {
+                        resetCompetition();
+                        updateStats();
+                        updateCompetitionControls();
+                        updateCompetitorsList();
+                        alert('Competition reset!');
+                    }
+                } else if (e.target.id === 'restart-competition-btn') {
+                    startCompetition();
+                    updateStats();
+                    updateCompetitionControls();
+                    updateCompetitorsList();
+                    alert('Competition restarted!');
+                }
+            });
+
+            // Competitor management
+            document.getElementById('add-competitor-btn').addEventListener('click', function() {
+                const username = document.getElementById('competitor-username').value;
+                if (!username) {
+                    alert('Please enter a username');
+                    return;
+                }
+                
+                const result = addManualCompetitor(username);
+                if (result.success) {
+                    document.getElementById('competitor-username').value = '';
+                    updateStats();
+                    updateCompetitorsList();
+                    alert(result.message);
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            });
+
+            document.getElementById('remove-competitor-btn').addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('.competitor-checkbox:checked');
+                if (checkboxes.length === 0) {
+                    alert('Please select competitors to remove');
+                    return;
+                }
+                
+                if (confirm(`Are you sure you want to remove ${checkboxes.length} competitor(s)?`)) {
+                    checkboxes.forEach(checkbox => {
+                        removeCompetitor(checkbox.value);
+                    });
+                    updateStats();
+                    updateCompetitorsList();
+                    alert('Competitors removed successfully');
+                }
+            });
+
+            // Select all competitors
+            document.getElementById('select-all-competitors').addEventListener('change', function(e) {
+                const checkboxes = document.querySelectorAll('.competitor-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = e.target.checked;
+                });
+            });
+
+            // Verification codes
+            document.getElementById('generate-code-btn').addEventListener('click', function() {
+                const userInput = document.getElementById('user-id-for-code').value;
+                if (!userInput) {
+                    alert('Please enter a user ID or username');
+                    return;
+                }
+                
+                // Find user by username
+                const users = getAllUsers();
+                const user = users.find(u => u.username === userInput);
+                
+                if (!user) {
+                    alert('User not found');
+                    return;
+                }
+                
+                const code = generateVerificationCode(user.id);
+                
+                const codeDiv = document.getElementById('generated-code');
+                codeDiv.querySelector('p').textContent = `Verification Code: ${code}`;
+                codeDiv.classList.remove('hidden');
+                
+                alert(`Generated code: ${code}\n\nShare this code with the user to complete their registration.`);
+            });
+
+            // Data management
+            document.getElementById('export-data-btn').addEventListener('click', function() {
+                const data = exportData();
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trademasters-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('Data exported successfully!');
+            });
+
+            document.getElementById('import-data-btn').addEventListener('click', function() {
+                const fileInput = document.getElementById('import-file');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    alert('Please select a file to import');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const result = importData(e.target.result);
+                    if (result.success) {
+                        alert('Data imported successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            document.getElementById('reset-data-btn').addEventListener('click', function() {
+                const result = resetAllData();
+                if (result.success) {
+                    alert('All data has been reset');
+                    location.reload();
+                } else {
+                    alert(result.message);
+                }
+            });
+        }
+
+        // Check admin auth on page load
+        document.addEventListener('DOMContentLoaded', checkAdminAuth);
+    </script>
+</body>
+</html>

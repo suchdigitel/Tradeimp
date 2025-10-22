@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TradeMasters</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-chart-line text-blue-600 text-2xl"></i>
+                    <span class="text-xl font-bold text-gray-800">TradeMasters</span>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-blue-600">Home</a>
+                    <a href="competition.html" class="text-gray-600 hover:text-blue-600">Competition</a>
+                    <a href="about.html" class="text-gray-600 hover:text-blue-600">Guide</a>
+                    <button id="logout-btn" class="text-gray-600 hover:text-blue-600">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" id="welcome-message">Welcome, User</h1>
+                    <p class="text-gray-600">Your trading dashboard</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Account Balance</p>
+                    <p class="text-3xl font-bold text-blue-600" id="balance-display">₹10,000.00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Trading Panel -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">Market Prices</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="market-prices">
+                        <!-- Prices will be populated by JavaScript -->
+                    </div>
+
+                    <h2 class="text-xl font-bold mb-4">Trade</h2>
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <form id="trade-form">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Product</label>
+                                    <select id="product-select" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="TechCoin">TechCoin</option>
+                                        <option value="GreenEnergy">GreenEnergy</option>
+                                        <option value="ForexPair">ForexPair</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Action</label>
+                                    <select id="action-select" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="buy">Buy</option>
+                                        <option value="sell">Sell</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                                <input 
+                                    type="number" 
+                                    id="quantity-input"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    min="1"
+                                    value="1"
+                                >
+                            </div>
+                            
+                            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                                <div class="flex justify-between text-sm">
+                                    <span>Current Price:</span>
+                                    <span id="current-price-display">₹0.00</span>
+                                </div>
+                                <div class="flex justify-between text-sm font-medium">
+                                    <span>Total Cost/Value:</span>
+                                    <span id="total-cost-display">₹0.00</span>
+                                </div>
+                            </div>
+
+                            <button 
+                                type="submit"
+                                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition"
+                                id="trade-button"
+                            >
+                                Execute Trade
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-4">Transaction History</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-2">Date</th>
+                                    <th class="text-left py-2">Type</th>
+                                    <th class="text-left py-2">Product</th>
+                                    <th class="text-left py-2">Quantity</th>
+                                    <th class="text-left py-2">Price</th>
+                                    <th class="text-left py-2">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-history">
+                                <!-- Transactions will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Sidebar -->
+            <div>
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">Portfolio</h2>
+                    <div id="portfolio-holdings">
+                        <!-- Portfolio will be populated by JavaScript -->
+                    </div>
+                    <div class="mt-4 pt-4 border-t">
+                        <div class="flex justify-between font-bold">
+                            <span>Total Portfolio Value:</span>
+                            <span id="portfolio-total">₹10,000.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-4">Quick Stats</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total Trades:</span>
+                            <span id="total-trades">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Active Holdings:</span>
+                            <span id="active-holdings">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Portfolio Return:</span>
+                            <span id="portfolio-return" class="text-green-500">+0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product definitions with base prices and volatility
+        const PRODUCTS = {
+            TechCoin: {
+                name: 'TechCoin',
+                basePrice: 1200,
+                volatility: 0.05,
+                trend: 0.001,
+                currentPrice: 1200,
+                history: []
+            },
+            GreenEnergy: {
+                name: 'GreenEnergy',
+                basePrice: 850,
+                volatility: 0.03,
+                trend: 0.002,
+                currentPrice: 850,
+                history: []
+            },
+            ForexPair: {
+                name: 'ForexPair',
+                basePrice: 1000,
+                volatility: 0.02,
+                trend: 0.0005,
+                currentPrice: 1000,
+                history: []
+            }
+        };
+
+        let currentUser = null;
+        let products = {};
+
+        // Check if user is logged in
+        function checkAuth(redirectIfNotLoggedIn = false) {
+            const currentUserData = localStorage.getItem('trademasters_current_user');
+            
+            if (redirectIfNotLoggedIn && !currentUserData) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            
+            return currentUserData ? JSON.parse(currentUserData) : null;
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('trademasters_current_user');
+            window.location.href = 'index.html';
+        }
+
+        function updateUserData(user) {
+            const users = JSON.parse(localStorage.getItem('trademasters_users') || '[]');
+            const userIndex = users.findIndex(u => u.id === user.id);
+            
+            if (userIndex !== -1) {
+                users[userIndex] = user;
+                localStorage.setItem('trademasters_users', JSON.stringify(users));
+                localStorage.setItem('trademasters_current_user', JSON.stringify(user));
+            }
+        }
+
+        // Initialize product prices if not set
+        function initializeProducts() {
+            const storedProducts = localStorage.getItem('trademasters_products');
+            
+            if (!storedProducts) {
+                // Initialize with base prices
+                for (const key in PRODUCTS) {
+                    PRODUCTS[key].history = [{
+                        price: PRODUCTS[key].basePrice,
+                        timestamp: new Date().getTime()
+                    }];
+                }
+                localStorage.setItem('trademasters_products', JSON.stringify(PRODUCTS));
+            } else {
+                // Update current prices from storage
+                const stored = JSON.parse(storedProducts);
+                for (const key in stored) {
+                    if (PRODUCTS[key]) {
+                        PRODUCTS[key].currentPrice = stored[key].currentPrice;
+                        PRODUCTS[key].history = stored[key].history || [];
+                    }
+                }
+            }
+        }
+
+        // Update product prices with random fluctuations
+        function updateProductPrices() {
+            const now = new Date().getTime();
+            
+            for (const key in PRODUCTS) {
+                const product = PRODUCTS[key];
+                
+                // Calculate price change based on volatility and trend
+                const randomFactor = (Math.random() - 0.5) * 2; // -1 to 1
+                const volatilityChange = product.volatility * randomFactor;
+                const trendChange = product.trend;
+                const totalChange = 1 + volatilityChange + trendChange;
+                
+                // Update price
+                product.currentPrice = Math.max(1, Math.round(product.currentPrice * totalChange * 100) / 100);
+                
+                // Add to history (keep last 100 data points)
+                product.history.push({
+                    price: product.currentPrice,
+                    timestamp: now
+                });
+                
+                if (product.history.length > 100) {
+                    product.history = product.history.slice(-100);
+                }
+            }
+            
+            // Save updated prices
+            localStorage.setItem('trademasters_products', JSON.stringify(PRODUCTS));
+            
+            return PRODUCTS;
+        }
+
+        // Get current product prices
+        function getProductPrices() {
+            const storedProducts = localStorage.getItem('trademasters_products');
+            return storedProducts ? JSON.parse(storedProducts) : PRODUCTS;
+        }
+
+        // Execute a buy order
+        function executeBuy(user, productName, quantity) {
+            const products = getProductPrices();
+            const product = products[productName];
+            
+            if (!product) {
+                return { success: false, message: 'Invalid product' };
+            }
+            
+            const totalCost = product.currentPrice * quantity;
+            
+            if (user.balance < totalCost) {
+                return { success: false, message: 'Insufficient balance' };
+            }
+            
+            // Update user portfolio and balance
+            user.balance -= totalCost;
+            user.portfolio[productName] = (user.portfolio[productName] || 0) + quantity;
+            
+            // Record transaction
+            user.transactionHistory.push({
+                type: 'BUY',
+                product: productName,
+                quantity: quantity,
+                price: product.currentPrice,
+                total: totalCost,
+                timestamp: new Date().toISOString()
+            });
+            
+            updateUserData(user);
+            
+            return { 
+                success: true, 
+                message: `Successfully bought ${quantity} ${productName} for ₹${totalCost.toFixed(2)}`,
+                newBalance: user.balance
+            };
+        }
+
+        // Execute a sell order
+        function executeSell(user, productName, quantity) {
+            const products = getProductPrices();
+            const product = products[productName];
+            
+            if (!product) {
+                return { success: false, message: 'Invalid product' };
+            }
+            
+            if (!user.portfolio[productName] || user.portfolio[productName] < quantity) {
+                return { success: false, message: 'Insufficient quantity in portfolio' };
+            }
+            
+            const totalValue = product.currentPrice * quantity;
+            
+            // Update user portfolio and balance
+            user.balance += totalValue;
+            user.portfolio[productName] -= quantity;
+            
+            // Record transaction
+            user.transactionHistory.push({
+                type: 'SELL',
+                product: productName,
+                quantity: quantity,
+                price: product.currentPrice,
+                total: totalValue,
+                timestamp: new Date().toISOString()
+            });
+            
+            updateUserData(user);
+            
+            return { 
+                success: true, 
+                message: `Successfully sold ${quantity} ${productName} for ₹${totalValue.toFixed(2)}`,
+                newBalance: user.balance
+            };
+        }
+
+        // Calculate portfolio value
+        function calculatePortfolioValue(user) {
+            const products = getProductPrices();
+            let totalValue = user.balance;
+            
+            for (const productName in user.portfolio) {
+                if (user.portfolio[productName] > 0 && products[productName]) {
+                    totalValue += user.portfolio[productName] * products[productName].currentPrice;
+                }
+            }
+            
+            return totalValue;
+        }
+
+        // Initialize trading system
+        function initializeTrading() {
+            initializeProducts();
+            
+            // Update prices every 10 seconds
+            setInterval(updateProductPrices, 10000);
+            
+            // Initial price update
+            updateProductPrices();
+        }
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            currentUser = checkAuth(true);
+            if (!currentUser) return;
+
+            // Initialize trading system
+            initializeTrading();
+            products = getProductPrices();
+
+            // Update UI
+            updateUserInfo();
+            updateMarketPrices();
+            updatePortfolio();
+            updateTransactionHistory();
+
+            // Set up event listeners
+            setupEventListeners();
+
+            // Start price updates
+            setInterval(updateMarketPrices, 5000);
+            setInterval(updatePortfolio, 5000);
+        }
+
+        function updateUserInfo() {
+            document.getElementById('welcome-message').textContent = `Welcome, ${currentUser.username}`;
+            document.getElementById('balance-display').textContent = `₹${currentUser.balance.toFixed(2)}`;
+        }
+
+        function updateMarketPrices() {
+            products = getProductPrices();
+            const container = document.getElementById('market-prices');
+            
+            container.innerHTML = Object.values(products).map(product => {
+                const priceChange = product.history.length > 1 ? 
+                    ((product.currentPrice - product.history[product.history.length - 2].price) / product.history[product.history.length - 2].price * 100) : 0;
+                
+                return `
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold">${product.name}</span>
+                            <span class="${priceChange >= 0 ? 'text-green-500' : 'text-red-500'}">
+                                ${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%
+                            </span>
+                        </div>
+                        <div class="text-2xl font-bold">₹${product.currentPrice.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updatePortfolio() {
+            const portfolioContainer = document.getElementById('portfolio-holdings');
+            const portfolioTotal = document.getElementById('portfolio-total');
+            
+            let totalValue = currentUser.balance;
+            let holdingsHTML = '';
+            let activeHoldings = 0;
+
+            for (const productName in currentUser.portfolio) {
+                const quantity = currentUser.portfolio[productName];
+                if (quantity > 0 && products[productName]) {
+                    activeHoldings++;
+                    const value = quantity * products[productName].currentPrice;
+                    totalValue += value;
+                    
+                    holdingsHTML += `
+                        <div class="flex justify-between py-2 border-b">
+                            <div>
+                                <span class="font-medium">${productName}</span>
+                                <div class="text-sm text-gray-600">${quantity} units</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-medium">₹${value.toFixed(2)}</div>
+                                <div class="text-sm text-gray-600">₹${products[productName].currentPrice.toFixed(2)}/unit</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            if (holdingsHTML === '') {
+                holdingsHTML = '<p class="text-gray-500 text-center py-4">No holdings yet</p>';
+            }
+
+            portfolioContainer.innerHTML = holdingsHTML;
+            portfolioTotal.textContent = `₹${totalValue.toFixed(2)}`;
+            
+            // Update stats
+            document.getElementById('active-holdings').textContent = activeHoldings;
+            document.getElementById('total-trades').textContent = currentUser.transactionHistory.length;
+            
+            const initialInvestment = 10000;
+            const returnPercentage = ((totalValue - initialInvestment) / initialInvestment * 100);
+            const returnElement = document.getElementById('portfolio-return');
+            returnElement.textContent = `${returnPercentage >= 0 ? '+' : ''}${returnPercentage.toFixed(2)}%`;
+            returnElement.className = returnPercentage >= 0 ? 'text-green-500' : 'text-red-500';
+        }
+
+        function updateTransactionHistory() {
+            const container = document.getElementById('transaction-history');
+            const transactions = currentUser.transactionHistory.slice(-10).reverse(); // Show last 10 transactions
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-gray-500">No transactions yet</td></tr>';
+                return;
+            }
+            
+            container.innerHTML = transactions.map(transaction => `
+                <tr class="border-b">
+                    <td class="py-2 text-sm">${new Date(transaction.timestamp).toLocaleDateString()}</td>
+                    <td class="py-2">
+                        <span class="px-2 py-1 rounded text-xs font-medium ${
+                            transaction.type === 'BUY' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }">
+                            ${transaction.type}
+                        </span>
+                    </td>
+                    <td class="py-2">${transaction.product}</td>
+                    <td class="py-2">${transaction.quantity}</td>
+                    <td class="py-2">₹${transaction.price.toFixed(2)}</td>
+                    <td class="py-2">₹${transaction.total.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function setupEventListeners() {
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                logoutUser();
+            });
+
+            // Trade form
+            document.getElementById('trade-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                executeTrade();
+            });
+
+            // Update trade calculations when inputs change
+            document.getElementById('product-select').addEventListener('change', updateTradeCalculation);
+            document.getElementById('action-select').addEventListener('change', updateTradeCalculation);
+            document.getElementById('quantity-input').addEventListener('input', updateTradeCalculation);
+        }
+
+        function updateTradeCalculation() {
+            const productName = document.getElementById('product-select').value;
+            const action = document.getElementById('action-select').value;
+            const quantity = parseInt(document.getElementById('quantity-input').value) || 0;
+            
+            if (products[productName]) {
+                const price = products[productName].currentPrice;
+                const total = price * quantity;
+                
+                document.getElementById('current-price-display').textContent = `₹${price.toFixed(2)}`;
+                document.getElementById('total-cost-display').textContent = `₹${total.toFixed(2)}`;
+                
+                // Update button text
+                document.getElementById('trade-button').textContent = 
+                    action === 'buy' ? `Buy ${quantity} ${productName}` : `Sell ${quantity} ${productName}`;
+            }
+        }
+
+        function executeTrade() {
+            const productName = document.getElementById('product-select').value;
+            const action = document.getElementById('action-select').value;
+            const quantity = parseInt(document.getElementById('quantity-input').value);
+            
+            let result;
+            if (action === 'buy') {
+                result = executeBuy(currentUser, productName, quantity);
+            } else {
+                result = executeSell(currentUser, productName, quantity);
+            }
+            
+            if (result.success) {
+                // Update current user data
+                currentUser = JSON.parse(localStorage.getItem('trademasters_current_user'));
+                updateUserInfo();
+                updatePortfolio();
+                updateTransactionHistory();
+                
+                // Show success message
+                alert(result.message);
+                
+                // Reset form
+                document.getElementById('quantity-input').value = 1;
+                updateTradeCalculation();
+            } else {
+                alert('Error: ' + result.message);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            updateTradeCalculation(); // Initial calculation
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competition - TradeMasters</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-chart-line text-blue-600 text-2xl"></i>
+                    <span class="text-xl font-bold text-gray-800">TradeMasters</span>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-blue-600">Home</a>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
+                    <a href="about.html" class="text-gray-600 hover:text-blue-600">Guide</a>
+                    <button id="logout-btn" class="text-gray-600 hover:text-blue-600">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Competition Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-8 mb-8 shadow-lg">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0 text-center md:text-left">
+                    <h1 class="text-3xl font-bold mb-2">7-Day Trading Challenge</h1>
+                    <p class="text-blue-100">Compete against traders and win cash prizes</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-4xl font-bold mb-2" id="countdown-timer">7d 00h 00m 00s</div>
+                    <p class="text-blue-100">Time Remaining</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Competition Status -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h2 class="text-2xl font-bold mb-4">Competition Status</h2>
+                    <div id="competition-status">
+                        <!-- Status will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Participant Requirements -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mr-3 mt-1"></i>
+                        <div>
+                            <h3 class="text-lg font-bold text-yellow-800 mb-2">Important Notice</h3>
+                            <p class="text-yellow-700">
+                                <strong>The competition requires minimum 10 participants to start.</strong> 
+                                Currently we have <span id="current-participants-count" class="font-bold">0</span> registered participants.
+                                Admin will manually start the competition once we have enough participants.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Live Leaderboard</h2>
+                        <div class="text-sm text-gray-500">Updates every 30 seconds</div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2">
+                                    <th class="text-left py-3 font-bold">Rank</th>
+                                    <th class="text-left py-3 font-bold">Trader</th>
+                                    <th class="text-left py-3 font-bold">Portfolio Value</th>
+                                    <th class="text-left py-3 font-bold">Return</th>
+                                    <th class="text-left py-3 font-bold">Active</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <!-- Leaderboard will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div>
+                <!-- Registration Panel -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">Join Competition</h2>
+                    
+                    <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-info-circle text-yellow-500 mr-2"></i>
+                            <span class="font-bold">Entry Fee: ₹70</span>
+                        </div>
+                        <p class="text-sm text-yellow-700">70% of entry fees go to prize pool</p>
+                    </div>
+
+                    <!-- Current Stats -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="bg-gray-50 p-3 rounded-lg text-center">
+                            <div class="text-sm text-gray-600">Participants</div>
+                            <div class="text-xl font-bold text-blue-600" id="participants-count">0</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg text-center">
+                            <div class="text-sm text-gray-600">Prize Pool</div>
+                            <div class="text-xl font-bold text-green-600" id="prize-pool-display">₹0</div>
+                        </div>
+                    </div>
+
+                    <div id="registration-section">
+                        <!-- Registration form will be shown if user is not registered -->
+                    </div>
+
+                    <div id="user-competition-status" class="hidden">
+                        <!-- User's competition status will be shown if registered -->
+                    </div>
+
+                    <!-- Maximum Participants Reached Message -->
+                    <div id="max-participants-message" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-times-circle text-red-500 mr-3"></i>
+                            <div>
+                                <h4 class="font-bold text-red-800">Maximum Participants Reached</h4>
+                                <p class="text-red-700 text-sm">Try again later or tomorrow after the game has been reset.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prize Distribution -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-4">Prize Distribution</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gradient-to-r from-yellow-100 to-yellow-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold mr-3">1</div>
+                                <span class="font-medium">First Place</span>
+                            </div>
+                            <span class="font-bold" id="first-prize">50%</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gradient-to-r from-gray-100 to-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white font-bold mr-3">2</div>
+                                <span class="font-medium">Second Place</span>
+                            </div>
+                            <span class="font-bold" id="second-prize">30%</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gradient-to-r from-orange-100 to-orange-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3">3</div>
+                                <span class="font-medium">Third Place</span>
+                            </div>
+                            <span class="font-bold" id="third-prize">20%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t">
+                        <div class="flex justify-between font-bold">
+                            <span>Total Prize Pool:</span>
+                            <span id="total-prize-pool">₹0</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            Prize pool increases with more participants!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Complete Registration</h3>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <!-- Payment Instructions -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-bold text-blue-800 mb-2">Payment Instructions:</h4>
+                    <ol class="list-decimal list-inside text-blue-700 space-y-2 text-sm">
+                        <li>Send ₹70 entry fee using UPI to: <strong class="font-mono">trademasters@upi</strong></li>
+                        <li>Take a screenshot of your successful payment</li>
+                        <li>Fill out the Google Form below with your details</li>
+                        <li>We will manually verify your payment and add you to the competition</li>
+                        <li>You'll receive a confirmation email within 24 hours</li>
+                    </ol>
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="text-center mb-6">
+                    <h4 class="font-bold mb-3">Scan QR Code to Pay</h4>
+                    <div class="bg-gray-200 w-48 h-48 mx-auto flex items-center justify-center rounded-lg mb-2">
+                        <span class="text-gray-500">QR Code Image</span>
+                    </div>
+                    <p class="text-sm text-gray-600">Scan with any UPI app to pay ₹70</p>
+                    <p class="text-sm font-mono text-gray-700 mt-1">UPI ID: suchiangsanki3@okaxis</p>
+                </div>
+
+                <!-- Embedded Google Form -->
+                <div class="border-2 border-gray-300 rounded-lg p-4">
+                    <h4 class="font-bold text-gray-700 mb-3 text-center">Payment Verification Form</h4>
+                    <p class="text-gray-600 mb-4 text-sm text-center">
+                        After payment, please fill out this form with your details
+                    </p>
+                    
+                    <!-- PASTE YOUR GOOGLE FORM EMBED CODE HERE -->
+                    <div class="bg-gray-200 h-400 mx-auto flex items-center justify-center rounded">
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfKRSQD1J6ovr7nGMOBjIEWo9LMPh6G9yiNecyAu_su-zaNdA/viewform?embedded=true" 
+        width="640" 
+        height="600" 
+        frameborder="0" 
+        marginheight="0" 
+        marginwidth="0"></iframe>
+                    </div>
+                    
+                    <p class="text-sm text-gray-500 mt-3 text-center">
+                        <strong>Note:</strong> We manually verify each payment. Admin will start competition manually.
+                    </p>
+                </div>
+
+                <!-- Manual Verification Option -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
+                    <h4 class="font-bold text-yellow-800 mb-2">Having Issues?</h4>
+                    <p class="text-yellow-700 text-sm">
+                        If you face any issues with payment, contact us at 
+                        <strong>support@trademasters.com</strong> or WhatsApp 
+                        <strong>+91 98765 43210</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button 
+                    id="cancel-payment"
+                    class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // COMPETITION CONFIGURATION - ADMIN CAN EDIT THESE
+        // =============================================
+        const ENTRY_FEE = 70;
+        const UPI_ID = "trademasters@upi";
+        const MIN_PARTICIPANTS = 10; // Minimum participants required
+        const MAX_PARTICIPANTS = 30; // Maximum participants allowed
+        const COMPETITION_DURATION = 7; // Days - Changed from 14 to 7
+        // =============================================
+
+        let currentUser = null;
+
+        // Check if user is logged in
+        function checkAuth(redirectIfNotLoggedIn = false) {
+            const currentUserData = localStorage.getItem('trademasters_current_user');
+            
+            if (redirectIfNotLoggedIn && !currentUserData) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            
+            return currentUserData ? JSON.parse(currentUserData) : null;
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('trademasters_current_user');
+            window.location.href = 'index.html';
+        }
+
+        // Competition functions
+        function isCompetitionActive() {
+            const startTime = localStorage.getItem('competition_start_time');
+            if (!startTime) return false;
+            
+            const now = new Date().getTime();
+            const endTime = parseInt(startTime) + (COMPETITION_DURATION * 24 * 60 * 60 * 1000);
+            return now < endTime;
+        }
+
+        function getCompetitionTimeRemaining() {
+            const startTime = localStorage.getItem('competition_start_time');
+            if (!startTime) return null;
+            
+            const now = new Date().getTime();
+            const endTime = parseInt(startTime) + (COMPETITION_DURATION * 24 * 60 * 60 * 1000);
+            
+            if (now >= endTime) return 0;
+            return endTime - now;
+        }
+
+        function getCompetitors() {
+            return JSON.parse(localStorage.getItem('trademasters_competitors') || '[]');
+        }
+
+        function getParticipantsCount() {
+            const competitors = getCompetitors();
+            return competitors.length;
+        }
+
+        function canAcceptMoreParticipants() {
+            return getParticipantsCount() < MAX_PARTICIPANTS;
+        }
+
+        function calculateCompetitorPortfolioValues() {
+            const competitors = getCompetitors();
+            const products = JSON.parse(localStorage.getItem('trademasters_products') || '{}');
+            
+            const leaderboard = competitors.map(competitor => {
+                let portfolioValue = competitor.competitionPortfolio.balance;
+                
+                for (const productName in competitor.competitionPortfolio.holdings) {
+                    const quantity = competitor.competitionPortfolio.holdings[productName];
+                    if (quantity > 0 && products[productName]) {
+                        portfolioValue += quantity * products[productName].currentPrice;
+                    }
+                }
+                
+                // Check if user is active (made at least 3 trades in competition)
+                const competitionTrades = competitor.competitionPortfolio.transactionHistory || [];
+                const isActive = competitionTrades.length >= 3;
+                
+                return {
+                    username: competitor.username,
+                    portfolioValue: portfolioValue,
+                    balance: competitor.competitionPortfolio.balance,
+                    holdings: { ...competitor.competitionPortfolio.holdings },
+                    isActive: isActive,
+                    tradeCount: competitionTrades.length
+                };
+            });
+            
+            // Sort by portfolio value (descending)
+            leaderboard.sort((a, b) => b.portfolioValue - a.portfolioValue);
+            
+            return leaderboard;
+        }
+
+        function calculatePrizes() {
+            const competitors = getCompetitors();
+            const participantCount = competitors.length;
+            const leaderboard = calculateCompetitorPortfolioValues();
+            
+            const prizePool = (participantCount * ENTRY_FEE) * 0.7; // 70% of entry fees as prize pool
+            
+            const prizes = {
+                1: prizePool * 0.5,  // 50%
+                2: prizePool * 0.3,  // 30%
+                3: prizePool * 0.2   // 20%
+            };
+            
+            return {
+                leaderboard: leaderboard,
+                prizes: prizes,
+                prizePool: prizePool,
+                participantCount: participantCount
+            };
+        }
+
+        function canCompetitionStart() {
+            return getParticipantsCount() >= MIN_PARTICIPANTS;
+        }
+
+        // Simulate trading for competitors
+        function simulateCompetitorTrading() {
+            if (!isCompetitionActive()) return;
+            
+            const competitors = getCompetitors();
+            const products = JSON.parse(localStorage.getItem('trademasters_products') || '{}');
+            
+            for (const competitor of competitors) {
+                // Only simulate trading for active competitors (those who have registered)
+                // Simple trading algorithm - buy/sell based on price movements
+                for (const productName in products) {
+                    const product = products[productName];
+                    const holding = competitor.competitionPortfolio.holdings[productName] || 0;
+                    
+                    // Random decision to trade (40% chance during competition)
+                    if (Math.random() < 0.4) {
+                        // Determine if buying or selling
+                        if (Math.random() < 0.6 && competitor.competitionPortfolio.balance > product.currentPrice) {
+                            // Buy decision
+                            const maxAffordable = Math.floor(competitor.competitionPortfolio.balance / product.currentPrice);
+                            const quantity = Math.max(1, Math.floor(Math.random() * maxAffordable * 0.15)); // Buy up to 15% of affordable
+                            
+                            if (quantity > 0) {
+                                const cost = quantity * product.currentPrice;
+                                competitor.competitionPortfolio.balance -= cost;
+                                competitor.competitionPortfolio.holdings[productName] = (competitor.competitionPortfolio.holdings[productName] || 0) + quantity;
+                                
+                                competitor.competitionPortfolio.transactionHistory.push({
+                                    type: 'BUY',
+                                    product: productName,
+                                    quantity: quantity,
+                                    price: product.currentPrice,
+                                    total: cost,
+                                    timestamp: new Date().toISOString()
+                                });
+                            }
+                        } else if (holding > 0) {
+                            // Sell decision
+                            const quantity = Math.max(1, Math.floor(Math.random() * holding * 0.25)); // Sell up to 25% of holdings
+                            
+                            if (quantity > 0) {
+                                const value = quantity * product.currentPrice;
+                                competitor.competitionPortfolio.balance += value;
+                                competitor.competitionPortfolio.holdings[productName] -= quantity;
+                                
+                                competitor.competitionPortfolio.transactionHistory.push({
+                                    type: 'SELL',
+                                    product: productName,
+                                    quantity: quantity,
+                                    price: product.currentPrice,
+                                    total: value,
+                                    timestamp: new Date().toISOString()
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            
+            localStorage.setItem('trademasters_competitors', JSON.stringify(competitors));
+        }
+
+        // Initialize competition page
+        function initializeCompetition() {
+            currentUser = checkAuth(true);
+            if (!currentUser) return;
+            
+            // Start auto-trading simulation
+            setInterval(simulateCompetitorTrading, 30000); // Every 30 seconds
+            
+            // Update UI
+            updateCompetitionStatus();
+            updateParticipantStats();
+            updateLeaderboard();
+            updateRegistrationSection();
+            updatePrizeInfo();
+
+            // Set up event listeners
+            setupEventListeners();
+
+            // Start updates
+            setInterval(updateLeaderboard, 30000);
+            setInterval(updateCountdown, 1000);
+            setInterval(updateParticipantStats, 5000);
+            setInterval(updateRegistrationSection, 10000);
+        }
+
+        function updateCompetitionStatus() {
+            const statusContainer = document.getElementById('competition-status');
+            const isActive = isCompetitionActive();
+            const startTime = localStorage.getItem('competition_start_time');
+            const participantCount = getParticipantsCount();
+            const canStart = canCompetitionStart();
+            
+            if (!startTime) {
+                if (participantCount < MIN_PARTICIPANTS) {
+                    statusContainer.innerHTML = `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-users text-yellow-500 mr-3 text-xl"></i>
+                                <div>
+                                    <h3 class="font-bold text-yellow-800">Waiting for Participants</h3>
+                                    <p class="text-yellow-700">
+                                        Need ${MIN_PARTICIPANTS - participantCount} more participants to start. 
+                                        Currently ${participantCount}/${MIN_PARTICIPANTS} registered.
+                                        Admin will start competition manually.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    statusContainer.innerHTML = `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-3 text-xl"></i>
+                                <div>
+                                    <h3 class="font-bold text-green-800">Ready to Start</h3>
+                                    <p class="text-green-700">
+                                        Minimum participants reached! Waiting for admin to start competition.
+                                        Currently ${participantCount} participants registered.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (isActive) {
+                statusContainer.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-play-circle text-green-500 mr-3 text-xl"></i>
+                            <div>
+                                <h3 class="font-bold text-green-800">Competition Active</h3>
+                                <p class="text-green-700">Trading is live! Check the leaderboard below.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                statusContainer.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-flag-checkered text-red-500 mr-3 text-xl"></i>
+                            <div>
+                                <h3 class="font-bold text-red-800">Competition Ended</h3>
+                                <p class="text-red-700">The competition has concluded. Winners will be announced soon.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateParticipantStats() {
+            const participantCount = getParticipantsCount();
+            const prizes = calculatePrizes();
+            
+            document.getElementById('participants-count').textContent = participantCount;
+            document.getElementById('current-participants-count').textContent = participantCount;
+            document.getElementById('prize-pool-display').textContent = `₹${prizes.prizePool.toFixed(2)}`;
+        }
+
+        function updateLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            const leaderboard = calculateCompetitorPortfolioValues();
+            
+            if (leaderboard.length === 0) {
+                leaderboardBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-gray-500">
+                            <i class="fas fa-users text-3xl mb-2 block"></i>
+                            <p>No competitors yet</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            leaderboardBody.innerHTML = leaderboard.map((competitor, index) => {
+                const rank = index + 1;
+                const returnValue = ((competitor.portfolioValue - 10000) / 10000 * 100);
+                
+                return `
+                    <tr class="border-b ${rank <= 3 ? 'bg-gradient-to-r from-blue-50 to-purple-50' : ''}">
+                        <td class="py-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center ${
+                                    rank === 1 ? 'bg-yellow-500 text-white' : 
+                                    rank === 2 ? 'bg-gray-500 text-white' : 
+                                    rank === 3 ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700'
+                                } font-bold mr-3">
+                                    ${rank}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 font-medium">${competitor.username}</td>
+                        <td class="py-4 font-bold">₹${competitor.portfolioValue.toFixed(2)}</td>
+                        <td class="py-4 ${returnValue >= 0 ? 'text-green-500' : 'text-red-500'} font-bold">
+                            ${returnValue >= 0 ? '+' : ''}${returnValue.toFixed(2)}%
+                        </td>
+                        <td class="py-4">
+                            <span class="px-2 py-1 rounded text-xs font-medium ${
+                                competitor.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }">
+                                ${competitor.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateRegistrationSection() {
+            const registrationSection = document.getElementById('registration-section');
+            const userStatusSection = document.getElementById('user-competition-status');
+            const maxParticipantsMessage = document.getElementById('max-participants-message');
+            
+            const competitors = getCompetitors();
+            const isRegistered = competitors.some(c => c.userId === currentUser.id);
+            const participantCount = getParticipantsCount();
+            const canAcceptMore = canAcceptMoreParticipants();
+            
+            // Show/hide max participants message
+            if (!canAcceptMore) {
+                maxParticipantsMessage.classList.remove('hidden');
+            } else {
+                maxParticipantsMessage.classList.add('hidden');
+            }
+            
+            if (isRegistered) {
+                registrationSection.classList.add('hidden');
+                userStatusSection.classList.remove('hidden');
+                maxParticipantsMessage.classList.add('hidden');
+                
+                const competitor = competitors.find(c => c.userId === currentUser.id);
+                const portfolioValue = calculateCompetitorPortfolio(competitor);
+                const returnValue = ((portfolioValue - 10000) / 10000 * 100);
+                const isActive = (competitor.competitionPortfolio.transactionHistory || []).length >= 3;
+                
+                userStatusSection.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="font-bold text-green-800">You're registered!</span>
+                        </div>
+                        <p class="text-green-700 text-sm">
+                            Currently ${participantCount} participants. 
+                            ${participantCount >= MIN_PARTICIPANTS ? 'Waiting for admin to start competition!' : `Need ${MIN_PARTICIPANTS - participantCount} more to start.`}
+                        </p>
+                        <p class="text-green-700 text-sm mt-1">
+                            <strong>Activity Status:</strong> 
+                            <span class="${isActive ? 'text-green-600' : 'text-red-600'}">
+                                ${isActive ? 'Active' : 'Make 3+ trades to qualify for prizes'}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-sm text-gray-600">Your Rank</div>
+                            <div class="text-xl font-bold" id="user-rank">-</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-sm text-gray-600">Your Return</div>
+                            <div class="text-xl font-bold ${returnValue >= 0 ? 'text-green-500' : 'text-red-500'}">
+                                ${returnValue >= 0 ? '+' : ''}${returnValue.toFixed(2)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Update user rank
+                const leaderboard = calculateCompetitorPortfolioValues();
+                const userRank = leaderboard.findIndex(c => c.username === currentUser.username) + 1;
+                if (userRank > 0) {
+                    document.getElementById('user-rank').textContent = `#${userRank}`;
+                }
+            } else {
+                if (canAcceptMore) {
+                    registrationSection.innerHTML = `
+                        <p class="text-gray-600 mb-4">
+                            Join the competition and test your trading skills against others. 
+                            <strong>Minimum ${MIN_PARTICIPANTS} participants required to start.</strong>
+                            <br><strong>Maximum ${MAX_PARTICIPANTS} participants allowed.</strong>
+                        </p>
+                        <button 
+                            id="join-competition-btn"
+                            class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition"
+                        >
+                            Register Now - ₹70
+                        </button>
+                        <p class="text-xs text-gray-500 mt-3 text-center">
+                            Currently ${participantCount}/${MAX_PARTICIPANTS} participants registered
+                        </p>
+                    `;
+                } else {
+                    registrationSection.innerHTML = `
+                        <p class="text-gray-600 mb-4 text-center">
+                            Maximum participants reached. Try again later.
+                        </p>
+                    `;
+                }
+                userStatusSection.classList.add('hidden');
+            }
+        }
+
+        function calculateCompetitorPortfolio(competitor) {
+            const products = JSON.parse(localStorage.getItem('trademasters_products') || '{}');
+            let portfolioValue = competitor.competitionPortfolio.balance;
+            
+            for (const productName in competitor.competitionPortfolio.holdings) {
+                const quantity = competitor.competitionPortfolio.holdings[productName];
+                if (quantity > 0 && products[productName]) {
+                    portfolioValue += quantity * products[productName].currentPrice;
+                }
+            }
+            
+            return portfolioValue;
+        }
+
+        function updatePrizeInfo() {
+            const prizes = calculatePrizes();
+            const participantCount = prizes.participantCount;
+            
+            document.getElementById('first-prize').textContent = `₹${prizes.prizes[1].toFixed(2)}`;
+            document.getElementById('second-prize').textContent = `₹${prizes.prizes[2].toFixed(2)}`;
+            document.getElementById('third-prize').textContent = `₹${prizes.prizes[3].toFixed(2)}`;
+            document.getElementById('total-prize-pool').textContent = `₹${prizes.prizePool.toFixed(2)}`;
+        }
+
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown-timer');
+            const timeLeft = getCompetitionTimeRemaining();
+            
+            if (timeLeft === null) {
+                countdownElement.textContent = 'Not Started';
+                return;
+            }
+            
+            if (timeLeft <= 0) {
+                countdownElement.textContent = 'Competition Ended';
+                return;
+            }
+            
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            countdownElement.textContent = 
+                `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+        }
+
+        function setupEventListeners() {
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                logoutUser();
+            });
+
+            // Join competition button (only if we can accept more participants)
+            document.addEventListener('click', function(e) {
+                if (e.target.id === 'join-competition-btn' && canAcceptMoreParticipants()) {
+                    showPaymentModal();
+                }
+            });
+
+            // Payment modal
+            document.getElementById('close-modal').addEventListener('click', hidePaymentModal);
+            document.getElementById('cancel-payment').addEventListener('click', hidePaymentModal);
+        }
+
+        function showPaymentModal() {
+            // Check again if we can accept more participants
+            if (!canAcceptMoreParticipants()) {
+                alert('Maximum participants reached. Try again later.');
+                return;
+            }
+            document.getElementById('payment-modal').classList.remove('hidden');
+        }
+
+        function hidePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCompetition();
+            updateCountdown(); // Initial countdown update
+            updateParticipantStats(); // Initial stats update
+        });
+    </script>
+</body>
+</html>
